@@ -14,7 +14,9 @@ spec :: Spec
 spec = with (return app) $ do
     describe "GET /short" $ do
         it "responds with 200" $ do
-            get "/short" `shouldRespondWith` 200
+            get "/short/abc" `shouldRespondWith` 200
         it "responds with ShortUrl" $ do
             let testData = "{\"originalUrl\":\"original_url\",\"shortenedUrl\":\"short_url\"}"
-            get "/short" `shouldRespondWith` testData
+            get "/short/abc" `shouldRespondWith` testData
+        it "responds with 404 if the short URL does'n exist" $ do
+            get "/short/nonexisting" `shouldRespondWith` 404
