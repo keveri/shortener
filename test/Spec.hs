@@ -6,13 +6,21 @@ import Lib (app)
 import Test.Hspec
 import Test.Hspec.Wai
 import Test.Hspec.Wai.JSON
+import Network.HTTP.Types (methodPost)
+import Network.Wai.Test (SResponse)
+import Data.ByteString
+import qualified Data.ByteString.Lazy as LB
+
+postJson :: ByteString -> LB.ByteString -> WaiSession SResponse
+postJson path = request methodPost path headers
+    where headers =  [("Content-Type", "application/json")]
 
 main :: IO ()
 main = hspec spec
 
 spec :: Spec
 spec = with (return app) $ do
-    describe "GET /short" $ do
+    describe "GET /short/:id" $ do
         it "responds with 200" $ do
             get "/short/abc" `shouldRespondWith` 200
         it "responds with ShortUrl" $ do
@@ -20,3 +28,14 @@ spec = with (return app) $ do
             get "/short/abc" `shouldRespondWith` testData
         it "responds with 404 if the short URL does'n exist" $ do
             get "/short/nonexisting" `shouldRespondWith` 404
+    describe "POST /short" $ do
+        it "responds with 200" $ do
+            let urlData = "{\"url\":\"https://hoogle.haskell.org/\"}"
+            postJson "/short" urlData  `shouldRespondWith` 200
+        it "responds with short URL data" $ do
+            let urlData = "{\"url\":\"orig\"}"
+            let shortUrlData = "{\"originalUrl\":\"orig\",\"shortenedUrl\":\"short_url\"}"
+            postJson "/short" urlData  `shouldRespondWith` shortUrlData
+        it "responds with 400 with invalid data" $ do
+            let invalidData = "{\"invalid\":\"will_fail\"}"
+            postJson "/short" invalidData  `shouldRespondWith` 400
