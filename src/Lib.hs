@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds       #-}
+{-# LANGUAGE LambdaCase      #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators   #-}
 module Lib
@@ -13,6 +14,7 @@ import Network.Wai.Handler.Warp
 import Servant
 
 type Url = String
+type Id = String
 
 data ShortUrl = ShortUrl
   { originalUrl  :: Url
@@ -21,7 +23,7 @@ data ShortUrl = ShortUrl
 
 $(deriveJSON defaultOptions ''ShortUrl)
 
-type API = "short" :> Get '[JSON] ShortUrl
+type API = "short" :> Capture "id" Id :> Get '[JSON] ShortUrl
 
 startApp :: IO ()
 startApp = run 8080 app
@@ -33,7 +35,12 @@ api :: Proxy API
 api = Proxy
 
 server :: Server API
-server = return testData
+server = shortUrlById
 
-testData :: ShortUrl
-testData = ShortUrl "original_url" "short_url"
+shortUrlById :: Id -> Handler ShortUrl
+shortUrlById = \ case
+  "abc" -> return exampleShortUrl
+  _     -> throwError err404
+
+exampleShortUrl :: ShortUrl
+exampleShortUrl = ShortUrl "original_url" "short_url"
