@@ -9,9 +9,12 @@ import Network.Wai.Handler.Warp
 import Servant
 
 import Shortener.Api
+import Shortener.Config
 
-startApp :: IO ()
-startApp = run 8080 app
+startApp :: Config -> IO ()
+startApp config = do
+  let port = cPort config
+  run port app
 
 app :: Application
 app = serve api server
