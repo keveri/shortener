@@ -1,10 +1,13 @@
 {-# LANGUAGE DataKinds       #-}
-{-# LANGUAGE LambdaCase      #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators   #-}
-module Lib
-    ( startApp
-    , app
+
+module Shortener.Api
+    ( api
+    , API
+    , OriginalUrl(..)
+    , ShortUrl(..)
+    , Id
     ) where
 
 import Data.Aeson
@@ -29,25 +32,5 @@ $(deriveJSON defaultOptions ''ShortUrl)
 type API = "short" :> Capture "id" Id :> Get '[JSON] ShortUrl
       :<|> "short" :> ReqBody '[JSON] OriginalUrl :> Post '[JSON] ShortUrl
 
-startApp :: IO ()
-startApp = run 8080 app
-
-app :: Application
-app = serve api server
-
 api :: Proxy API
 api = Proxy
-
-server :: Server API
-server = shortUrlById :<|> createShortUrl
-
-shortUrlById :: Id -> Handler ShortUrl
-shortUrlById = \ case
-  "abc" -> return exampleShortUrl
-  _     -> throwError err404
-
-createShortUrl :: OriginalUrl -> Handler ShortUrl
-createShortUrl (OriginalUrl url) = return $ ShortUrl url "short_url"
-
-exampleShortUrl :: ShortUrl
-exampleShortUrl = ShortUrl "original_url" "short_url"
