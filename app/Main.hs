@@ -1,6 +1,6 @@
 module Main where
 
-import Lib
+import Shortener.Lib
 
 main :: IO ()
 main = startApp

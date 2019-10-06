@@ -15,7 +15,8 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Lib
+  exposed-modules:     Shortener.Lib
+  other-modules:       Shortener.Api
   build-depends:       base >= 4.7 && < 5
                      , aeson
                      , servant-server
@@ -35,6 +36,7 @@ test-suite shortener-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
+  other-modules:       Shortener.AppSpec
   build-depends:       base
                      , shortener
                      , bytestring
