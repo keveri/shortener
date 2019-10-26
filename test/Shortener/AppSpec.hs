@@ -19,19 +19,21 @@ import           Test.Hspec.Wai.JSON
 import           Shortener.Database     (createShortUrlPG, resetDB)
 import           Shortener.Lib          (Env (..), app)
 import           Shortener.Schema
+import           Shortener.Token        (randomToken)
 
 postJson :: ByteString -> LB.ByteString -> WaiSession SResponse
 postJson path = request methodPost path headers
     where headers =  [("Content-Type", "application/json")]
 
 insertShortUrl :: ShortUrl -> IO (Maybe ShortUrl)
-insertShortUrl = createShortUrlPG (envConnectionString testEnv)
+insertShortUrl = createShortUrlPG (envConnStr testEnv)
 
 testEnv :: Env
-testEnv = Env "host=127.0.0.1 port=54320 user=test dbname=shortener-test password=test"
+testEnv = Env connStr randomToken
+    where connStr = "host=127.0.0.1 port=54320 user=test dbname=shortener-test password=test"
 
 testSetup :: Env -> IO()
-testSetup (Env connStr) = resetDB connStr
+testSetup (Env connStr _) = resetDB connStr
 
 insertTestUrl :: IO ()
 insertTestUrl = void $ insertShortUrl $ ShortUrl "test-url" "test-token"
