@@ -1,0 +1,20 @@
+version: "3"
+services:
+  db:
+    image: "postgres"
+    container_name: "shortener_postgres"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=passwd
+      - POSTGRES_DB=shortener
+    ports:
+      - "5432:5432"
+  test-db:
+    image: "postgres"
+    container_name: "shortener_postgres_test"
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=shortener-test
+    ports:
+      - "54320:5432"

@@ -5,20 +5,20 @@ module Shortener.ConfigSpec
   , spec
   ) where
 
-import Test.Hspec
+import           Test.Hspec
 
-import Shortener.Config
+import           Shortener.Config
 
 main :: IO ()
 main = hspec spec
 
 spec :: Spec
-spec = do
+spec =
   describe "readAppConfig" $ do
     it "reads valid config file" $ do
-      let valid = Config 1234
+      let port = 8081
       conf <- readConfig "test/fixtures/config/valid.cfg"
-      conf `shouldBe` valid
+      cPort conf `shouldBe` port
     it "fails to read invalid config file" $ do
       let path = "test/fixtures/config/invalid.cfg"
       readConfig path `shouldThrow` anyException

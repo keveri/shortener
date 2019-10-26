@@ -17,12 +17,24 @@ library
   hs-source-dirs:      src
   exposed-modules:     Shortener.Lib
                      , Shortener.Config
+                     , Shortener.Database
+                     , Shortener.Schema
   other-modules:       Shortener.Api
   build-depends:       base >= 4.7 && < 5
                      , aeson
+                     , bytestring
                      , configurator
+                     , interpolate
+                     , monad-logger
+                     , mtl
                      , servant-server
+                     , persistent
+                     , persistent-postgresql
+                     , persistent-template
+                     , string-random
+                     , text
                      , wai
+                     , wai-logger
                      , warp
   default-language:    Haskell2010
 
