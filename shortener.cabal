@@ -19,6 +19,7 @@ library
                      , Shortener.Config
                      , Shortener.Database
                      , Shortener.Schema
+                     , Shortener.Token
   other-modules:       Shortener.Api
   build-depends:       base >= 4.7 && < 5
                      , aeson

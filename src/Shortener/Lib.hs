@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Shortener.Lib
     ( startApp
     , app
@@ -13,16 +11,19 @@ import           Database.Persist.Postgresql (ConnectionString)
 import           Network.Wai.Handler.Warp
 import           Network.Wai.Logger          (withStdoutLogger)
 import           Servant
-import           Text.StringRandom
 
 import           Database.Persist            (Entity)
 import           Shortener.Api
 import           Shortener.Config
 import           Shortener.Database
 import           Shortener.Schema
+import           Shortener.Token             (randomToken)
 
-newtype Env = Env
-  { envConnectionString :: ConnectionString
+type TokenGenerator = IO Text
+
+data Env = Env
+  { envConnStr  :: ConnectionString
+  , envTokenGen :: TokenGenerator
   }
 
 startApp :: Config -> Env -> IO ()
@@ -35,24 +36,19 @@ app :: Env -> Application
 app = serve api . server
 
 server :: Env -> Server API
-server env =
-  let connStr = envConnectionString env
-  in shortUrlByToken connStr :<|> createShortUrl connStr
+server env = shortUrlByToken env :<|> createShortUrl env
 
-randomToken :: IO Text
-randomToken = stringRandomIO "[a-zA-Z]{6}"
-
-shortUrlByToken :: ConnectionString -> Text -> Handler ShortUrl
-shortUrlByToken connStr token = do
-  result <- liftIO $ findUrlPG connStr token
+shortUrlByToken :: Env -> Text -> Handler ShortUrl
+shortUrlByToken (Env cStr _) token = do
+  result <- liftIO $ findUrlPG cStr token
   case result of
     Just r  -> return r
     Nothing -> throwError err404
 
-createShortUrl :: ConnectionString -> OriginalUrl -> Handler ShortUrl
-createShortUrl connStr ou@(OriginalUrl url) = do
-  token <- liftIO randomToken
-  mShortUrl <- liftIO $ createShortUrlPG connStr $ ShortUrl url token
+createShortUrl :: Env -> OriginalUrl -> Handler ShortUrl
+createShortUrl e@(Env cStr tGen) ou@(OriginalUrl url) = do
+  token <- liftIO tGen
+  mShortUrl <- liftIO $ createShortUrlPG cStr $ ShortUrl url token
   case mShortUrl of
-      Nothing -> createShortUrl connStr ou
+      Nothing -> createShortUrl e ou
       Just r  -> return r
