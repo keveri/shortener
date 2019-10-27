@@ -1,6 +1,9 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Shortener.Lib
     ( startApp
     , app
+    , generateJSClient
     , Env(..)
     ) where
 
@@ -11,6 +14,9 @@ import           Database.Persist.Postgresql (ConnectionString)
 import           Network.Wai.Handler.Warp
 import           Network.Wai.Logger          (withStdoutLogger)
 import           Servant
+import           Servant.Server.StaticFiles
+import           Servant.JS                  (writeJSForAPI)
+import           Servant.JS.Vanilla          (vanillaJS)
 
 import           Database.Persist            (Entity)
 import           Shortener.Api
@@ -36,7 +42,12 @@ app :: Env -> Application
 app = serve api . server
 
 server :: Env -> Server API
-server env = shortUrlByToken env :<|> createShortUrl env
+server env = shortUrlByToken env
+        :<|> createShortUrl env
+        :<|> serveDirectoryFileServer "static/"
+
+generateJSClient :: IO ()
+generateJSClient = writeJSForAPI jsonApi vanillaJS "static/js/api.js"
 
 shortUrlByToken :: Env -> Text -> Handler ShortUrl
 shortUrlByToken (Env cStr _) token = do

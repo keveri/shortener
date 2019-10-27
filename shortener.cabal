@@ -29,6 +29,7 @@ library
                      , monad-logger
                      , mtl
                      , servant-server
+                     , servant-js
                      , persistent
                      , persistent-postgresql
                      , persistent-template

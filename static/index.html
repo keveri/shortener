@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>API JS Test</title>
+  </head>
+  <body>
+    <p>Hello, check console</p>
+  </body>
+  <script type="text/javascript" src="/js/api.js"></script>
+  <script type="text/javascript" src="/js/app.js"></script>
+  <script>
+    (function() {
+        const exampleUrl = {url: "https://hoogle.haskell.org/"}
+        api.postShortUrl(exampleUrl, printAndGetByToken, showError)
+     })();
+  </script>
+</html>

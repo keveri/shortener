@@ -28,6 +28,8 @@ Example:
 
     curl -X POST --header "Content-Type: application/json" --data '{"url": "a.com"}' 'localhost:8080/short'
 
+View generated JS API client test at http://localhost:8080.
+
 ### Formatting
 
 Format with `hlint` and `stylish-haskell`.
