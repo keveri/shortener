@@ -30,7 +30,7 @@ insertShortUrl = createShortUrlPG (envConnStr testEnv)
 
 testEnv :: Env
 testEnv = Env connStr randomToken
-    where connStr = "host=127.0.0.1 port=54320 user=test dbname=shortener-test password=test"
+    where connStr = "host=localhost port=5432 user=test dbname=shortener-test password=test"
 
 testSetup :: Env -> IO()
 testSetup (Env connStr _) = resetDB connStr

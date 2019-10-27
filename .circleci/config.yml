@@ -3,8 +3,16 @@ jobs:
   build:
     docker:
       - image: fpco/stack-build:lts
+      - image: circleci/postgres:9.6-alpine
+        environment:
+          POSTGRES_USER: test
+          POSTGRES_DB: shortener-test
+          POSTGRES_PASSWORD: test
     steps:
       - checkout
+      - run:
+          name: Waiting for Postgres to be ready
+          command: sleep 10
       - restore_cache:
           name: Restore Cached Dependencies
           keys:
@@ -12,10 +20,10 @@ jobs:
             - shortener-{{ checksum "stack.yaml" }}
       - run:
           name: Resolve/Update Dependencies
-          command: stack --no-terminal setup
+          command: stack --no-terminal -j1 setup
       - run:
           name: Run tests
-          command: stack --no-terminal test
+          command: stack --no-terminal -j1 test
       - save_cache:
           name: Cache Dependencies
           key: shortener-{{ checksum "stack.yaml" }}-{{ checksum "shortener.cabal" }}
