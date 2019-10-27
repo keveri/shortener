@@ -7,6 +7,7 @@ import           Shortener.Token    (randomToken)
 
 main :: IO ()
 main = do
+  generateJSClient
   config <- readConfig "app.cfg"
   let connectionString = fetchConnectionString (cDbConfig config)
       env = Env connectionString randomToken

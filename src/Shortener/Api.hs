@@ -5,7 +5,9 @@
 
 module Shortener.Api
     ( api
+    , jsonApi
     , API
+    , JSONAPI
     , OriginalUrl(..)
     ) where
 
@@ -24,8 +26,16 @@ newtype OriginalUrl = OriginalUrl { url :: Url } deriving (Eq, Show)
 
 $(deriveJSON defaultOptions ''OriginalUrl)
 
+type JSONAPI = "short" :> Capture "token" Text :> Get '[JSON] ShortUrl
+          :<|> "short" :> ReqBody '[JSON] OriginalUrl :> Post '[JSON] ShortUrl
+
+-- TODO: How to combine JSONAPI and Raw without repeating it here
 type API = "short" :> Capture "token" Text :> Get '[JSON] ShortUrl
-      :<|> "short" :> ReqBody '[JSON] OriginalUrl :> Post '[JSON] ShortUrl
+          :<|> "short" :> ReqBody '[JSON] OriginalUrl :> Post '[JSON] ShortUrl
+          :<|> Raw
+
+jsonApi :: Proxy JSONAPI
+jsonApi = Proxy
 
 api :: Proxy API
 api = Proxy
